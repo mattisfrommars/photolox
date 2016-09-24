@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"
+        integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+        crossorigin="anonymous"></script>
+<script>
+    var didInitMap = $.Deferred();
+    var map;
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: {lat: 0, lng: 0},
+            zoom: 2
+        });
+        didInitMap.resolve();
+    }
+    var locations;
+    const didGetJSON = $.getJSON('/locations').then(function (_locations) {
+        locations = _locations;
+    });
+
+    $.when(didInitMap, didGetJSON).then(function () {
+        var markers = locations
+                .filter(function (location) {
+                    return location.latitude !== 0 && location.longitude !== 0;
+                }).map(function (location) {
+                    return new google.maps.Marker({
+                        position: {
+                            lat: location.latitude,
+                            lng: location.longitude,
+                        },
+                        label: location.path
+                    });
+                });
+        var markerCluster = new MarkerClusterer(map, markers,
+                {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
+    });
+</script>
+<script src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js">
+</script>
+<script>
+    var tag = document.createElement('script');
+    tag.src = "https://maps.googleapis.com/maps/api/js?key=" + window.location.pathname.slice(1) + "&callback=initMap";
+    document.body.appendChild(tag);
+</script>
+
+</body>
+</html>

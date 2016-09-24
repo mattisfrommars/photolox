@@ -1,0 +1,4 @@
+.idea/
+GOOGLE_API_KEY.txt
+node_modules/**
+locations.json
