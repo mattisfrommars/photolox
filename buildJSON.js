@@ -16,7 +16,6 @@ function promisedRead(path) {
 const decimalMinute = 1 / 60;
 const decimalSecond = decimalMinute / 60;
 function toDecimal([deg, min, sec], isPositive) {
-    console.log(isPositive);
     const decVal = deg + (decimalMinute * min) + (decimalSecond * sec);
     return isPositive ? decVal : -1 * decVal;
 }
