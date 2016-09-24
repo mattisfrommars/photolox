@@ -15,7 +15,8 @@ function promisedRead(path) {
 
 const decimalMinute = 1 / 60;
 const decimalSecond = decimalMinute / 60;
-function toDecimal([deg, min, sec], isPositive = true) {
+function toDecimal([deg, min, sec], isPositive) {
+    console.log(isPositive);
     const decVal = deg + (decimalMinute * min) + (decimalSecond * sec);
     return isPositive ? decVal : -1 * decVal;
 }
@@ -24,7 +25,7 @@ co(function*() {
     try {
         const basePath = path.join(homedir, '/Dropbox/Camera Uploads');
         const contents = fs.readdirSync(basePath).filter(name => /\.jpg$/.test(name));
-        // const contents = ['2013-10-12 14.11.28.jpg'];
+        // const contents = ['2016-04-11 06.38.42.jpg', '2013-07-16 13.24.56.jpg'];
         const results = yield Promise.all(contents.map(filename => {
             const imagePath = path.join(basePath, filename);
             return promisedRead(imagePath).then(exifData => {
@@ -37,7 +38,7 @@ co(function*() {
         }).map(result => {
             const path = result.file.path;
             const isNorth = result.gps.GPSLatitudeRef === 'N';
-            const isEast = result.gps.GPSLongitudeRed === 'E';
+            const isEast = result.gps.GPSLongitudeRef === 'E';
             const latitude = toDecimal(result.gps.GPSLatitude, isNorth);
             const longitude = toDecimal(result.gps.GPSLongitude, isEast);
             return {latitude, longitude, path};
